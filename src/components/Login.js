@@ -1,6 +1,9 @@
 import React, { useRef, useState } from 'react'
 import Header from './Header'
 import checkValidData from '../utils/validate';
+import { createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../utils/firebase';
+
 const Login = () => {
 
     const [isSignInForm, setIsSignInForm] = useState(true);
@@ -10,17 +13,39 @@ const Login = () => {
     const email = useRef(null);
     const password = useRef(null);
     const handleButtonClick = () => {
-        let message;
-        if (isSignInForm) {
-            // Sign In: name not required, pass empty string
-            message = checkValidData("", email.current.value, password.current.value);
-            console.log(message);
-        } else {
-            // Sign Up: name required
-            message = checkValidData(name.current.value, email.current.value, password.current.value);
-        }
+        const message = checkValidData(email.current.value, password.current.value);
         setErrorMessage(message);
-        // sign /sign up
+        if (message) return;
+
+        // Sign in sign up logic
+        if (!isSignInForm) {
+            // sign up logic
+            createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log(user);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    setErrorMessage(errorCode + "-" + errorMessage);
+                    // ..
+                });
+        }
+        else {
+            // sign in logic
+            signInWithEmailAndPassword(auth,email.current.value, password.current.value)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    console.log(user);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    setErrorMessage(errorMessage+ "-" +errorCode)
+                });
+        }
     }
 
     const toggleSignInForm = () => {

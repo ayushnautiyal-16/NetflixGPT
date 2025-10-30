@@ -1,7 +1,4 @@
-const checkValidData = (name, email, password) => {
-    if (name !== null && name.trim() === "") {
-        return "Name is not valid";
-    }
+const checkValidData = (email, password) => {
     const isEmailValid = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(email);
     const isPasswordValid = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(password);
 
@@ -10,5 +7,4 @@ const checkValidData = (name, email, password) => {
 
     return null;
 };
-
 export default checkValidData;
